@@ -46,6 +46,8 @@ from meld.ui.findbar import FindBar
 from meld.ui.gnomeglade import Component, ui_file
 from meld.undo import UndoSequence
 
+from proxy import P as proxy
+
 
 def with_scroll_lock(lock_attr):
     """Decorator for locking a callback based on an instance attribute
@@ -409,6 +411,7 @@ class FileDiff(MeldDoc, Component):
             self.cursor.prev_conflict = prev_conflict
             self.cursor.next_conflict = next_conflict
         self.cursor.line, self.cursor.offset = line, offset
+        proxy.send({'file': self.fileentry[pane].get_filename(), 'line': line})
 
     def on_current_diff_changed(self, widget, *args):
         pane = self._get_focused_pane()

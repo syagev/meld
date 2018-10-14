@@ -365,10 +365,23 @@ if __name__ == '__main__':
     setup_settings()
     environment_hacks()
 
+    if 'PTVSD' in sys.argv:
+        import ptvsd
+        ptvsd.enable_attach()
+        print('Waiting PTVSD')
+        ptvsd.wait_for_attach()
+        ptvsd.break_into_debugger()
+        sys.argv.remove('PTVSD')
+
+    from proxy import Proxy
+    p = Proxy()
+    p.start()
+
     import meld.meldapp
     if sys.platform != 'win32':
         from gi.repository import GLib
         GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT,
                              lambda *args: meld.meldapp.app.quit(), None)
     status = meld.meldapp.app.run(sys.argv)
+    p.close()
     sys.exit(status)
